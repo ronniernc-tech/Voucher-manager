@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My Vouchers</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#085041;--green-mid:#5DCAA5;
+    --amber-light:#FAEEDA;--amber-dark:#854F0B;
+    --red-light:#FCEBEB;--red-dark:#A32D2D;--red-mid:#F7C1C1;
+    --use-color:#D85A30;
+    --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeece8;
+    --text:#1a1a18;--text2:#6b6b67;--text3:#9a9a96;
+    --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+    --radius:10px;--radius-lg:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);color:var(--text);max-width:430px;margin:0 auto;min-height:100vh}
+  .screen{display:none;flex-direction:column;min-height:100vh;background:var(--bg2)}
+  .screen.active{display:flex}
+  .topbar{background:var(--green);padding:48px 16px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .topbar h1{font-size:18px;font-weight:600;color:#fff;flex:1}
+  .topbar p{font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px}
+  .topbar-text{flex:1}
+  .topbar-icon{color:rgba(255,255,255,0.85);font-size:22px;cursor:pointer;padding:4px}
+  .back-btn{color:rgba(255,255,255,0.9);font-size:22px;cursor:pointer;margin-right:2px}
+  .scroll-content{flex:1;overflow-y:auto;padding-bottom:70px}
+  .sec{padding:14px 16px;border-bottom:0.5px solid var(--border);background:var(--bg)}
+  .sec:last-of-type{border-bottom:none}
+  .sec-title{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+  .shop-card{background:var(--bg2);border-radius:var(--radius);padding:11px 12px;margin-bottom:8px;border:0.5px solid var(--border);cursor:pointer}
+  .shop-card:last-child{margin-bottom:0}
+  .shop-card:active{background:var(--bg3)}
+  .shop-row{display:flex;justify-content:space-between;align-items:center}
+  .shop-left{display:flex;align-items:center;gap:10px}
+  .logo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:0.5px solid var(--border);flex-shrink:0;overflow:hidden;background:var(--bg3);color:var(--text2)}
+  .logo img{width:100%;height:100%;object-fit:cover}
+  .logo-sm{width:28px;height:28px;border-radius:7px;font-size:9px}
+  .logo-lg{width:64px;height:64px;border-radius:14px;font-size:18px}
+  .shop-info .name{font-size:14px;font-weight:600;color:var(--text)}
+  .shop-info .sub{font-size:12px;color:var(--text2);margin-top:2px}
+  .badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .b-ok{background:var(--green-light);color:var(--green-dark)}
+  .b-low{background:var(--amber-light);color:var(--amber-dark)}
+  .b-empty{background:var(--red-light);color:var(--red-dark)}
+  .expiry-row{display:flex;justify-content:space-between;align-items:center;background:var(--amber-light);border-radius:7px;padding:6px 10px;margin-top:7px}
+  .expiry-text{font-size:12px;color:var(--amber-dark)}
+  .form-field{margin-bottom:12px}
+  .form-field label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;font-weight:500}
+  .form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border-radius:var(--radius);border:0.5px solid var(--border2);font-size:15px;background:var(--bg2);color:var(--text);outline:none;font-family:inherit}
+  .form-field input:focus,.form-field select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
+  .form-field textarea{resize:vertical;min-height:70px}
+  .shop-sel{display:flex;align-items:center;gap:8px;background:var(--bg2);border-radius:var(--radius);padding:8px 12px;border:0.5px solid var(--border2);cursor:pointer}
+  .shop-sel .sel-name{font-size:15px;color:var(--text);flex:1}
+  .qty-row{display:flex;align-items:center;gap:16px}
+  .qty-btn{width:40px;height:40px;border-radius:var(--radius);background:var(--bg2);border:0.5px solid var(--border2);font-size:22px;display:flex;align-items:center;justify-content:center;color:var(--text);cursor:pointer;user-select:none}
+  .qty-btn:active{background:var(--bg3)}
+  .qty-num{font-size:24px;font-weight:600;color:var(--text);min-width:40px;text-align:center}
+  .btn{padding:13px 16px;border-radius:var(--radius);font-size:15px;font-weight:600;text-align:center;border:none;cursor:pointer;display:block;width:100%;font-family:inherit;transition:opacity 0.15s}
+  .btn:active{opacity:0.82}
+  .btn-primary{background:var(--green);color:#fff}
+  .btn-primary:disabled{background:var(--bg3);color:var(--text3);cursor:not-allowed;opacity:1}
+  .btn-secondary{background:var(--bg2);color:var(--text);border:0.5px solid var(--border2)}
+  .btn-danger{background:var(--red-light);color:var(--red-dark);border:0.5px solid var(--red-mid)}
+  .btn-row{display:flex;gap:8px}
+  .btn-row .btn{flex:1}
+  .alert{display:flex;align-items:flex-start;gap:8px;border-radius:var(--radius);padding:10px 12px;margin-bottom:12px}
+  .alert-warn{background:var(--red-light)}
+  .alert-warn i{color:var(--red-dark);font-size:18px;flex-shrink:0;margin-top:1px}
+  .alert-warn span{font-size:13px;color:var(--red-dark);line-height:1.5}
+  .alert-info{background:var(--green-light)}
+  .alert-info i{color:var(--green-dark);font-size:18px;flex-shrink:0;margin-top:1px}
+  .alert-info span{font-size:13px;color:var(--green-dark);line-height:1.5}
+  .remaining-note{background:var(--green-light);border-radius:7px;padding:7px 10px;font-size:12px;color:var(--green-dark);margin-top:6px}
+  .tab-bar{display:flex;border-top:0.5px solid var(--border);background:var(--bg);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:100}
+  .tab{flex:1;padding:10px 4px 12px;text-align:center;cursor:pointer}
+  .tab i{font-size:22px;color:var(--text3);display:block}
+  .tab span{font-size:10px;color:var(--text3);margin-top:2px;display:block}
+  .tab.active i,.tab.active span{color:var(--green)}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .stat-card{background:var(--bg2);border-radius:var(--radius);padding:10px 12px}
+  .stat-val{font-size:22px;font-weight:700;color:var(--text)}
+  .stat-lbl{font-size:11px;color:var(--text2);margin-top:2px}
+  .hist-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+  .hist-row:last-child{border-bottom:none}
+  .hist-info{flex:1;min-width:0}
+  .h-label{font-size:13px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .h-sub{font-size:11px;color:var(--text2);margin-top:2px}
+  .hist-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+  .txn-qty{font-size:13px;font-weight:700;white-space:nowrap}
+  .h-use{color:var(--use-color)}
+  .h-buy{color:var(--green)}
+  .balance-pill{background:var(--bg2);border-radius:20px;padding:2px 8px;font-size:11px;color:var(--text2);white-space:nowrap;border:0.5px solid var(--border)}
+  .filter-bar{display:flex;gap:6px;padding:10px 16px;border-bottom:0.5px solid var(--border);overflow-x:auto;background:var(--bg)}
+  .filter-bar::-webkit-scrollbar{display:none}
+  .chip{padding:6px 12px;border-radius:20px;font-size:12px;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:5px;font-weight:500}
+  .chip.active{background:var(--green-light);color:var(--green-dark);border-color:var(--green-mid)}
+  .chip-logo{width:16px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;overflow:hidden;flex-shrink:0}
+  .chip-logo img{width:100%;height:100%;object-fit:cover}
+  .list-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+  .list-row:last-child{border-bottom:none}
+  .list-row:active{opacity:0.7}
+  .list-row-right{margin-left:auto;color:var(--text3);font-size:18px}
+  .profile-header{display:flex;flex-direction:column;align-items:center;padding:20px 16px 16px;border-bottom:0.5px solid var(--border);background:var(--bg)}
+  .upload-hint{font-size:13px;color:var(--green);margin-top:8px;cursor:pointer;display:flex;align-items:center;gap:4px}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .tag{background:var(--green-light);color:var(--green-dark);border-radius:20px;font-size:12px;padding:4px 10px;font-weight:500;display:flex;align-items:center;gap:4px}
+  .tag-del{cursor:pointer;font-size:14px;color:var(--green-dark);opacity:0.6}
+  .add-tag-btn{background:var(--bg2);color:var(--text2);border-radius:20px;font-size:12px;padding:4px 10px;border:0.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;gap:3px}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--text2)}
+  .empty-state i{font-size:48px;color:var(--text3);display:block;margin-bottom:12px}
+  .empty-state p{font-size:14px}
+  #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;max-width:90vw}
+  #toast.show{opacity:1}
+  .modal-overlay{display:none;min-height:100vh;background:rgba(0,0,0,0.45);align-items:flex-end;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px 36px;width:100%;max-width:430px}
+  .modal h3{font-size:16px;font-weight:600;margin-bottom:14px}
+  .modal-btn-row{display:flex;gap:8px;margin-top:14px}
+  input[type="file"]{display:none}
+
+  /* SYNC STATUS BAR */
+  .sync-bar{display:flex;align-items:center;gap:6px;padding:6px 16px;font-size:12px;background:var(--bg);border-bottom:0.5px solid var(--border)}
+  .sync-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .sync-ok .sync-dot{background:var(--green)}
+  .sync-ok span{color:var(--green-dark)}
+  .sync-busy .sync-dot{background:var(--amber-dark)}
+  .sync-busy span{color:var(--amber-dark)}
+  .sync-err .sync-dot{background:var(--red-dark)}
+  .sync-err span{color:var(--red-dark)}
+
+  /* LOADING OVERLAY */
+  #loading{position:fixed;inset:0;background:var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;transition:opacity 0.4s}
+  #loading.hide{opacity:0;pointer-events:none}
+  #loading i{font-size:48px;color:#fff;margin-bottom:16px}
+  #loading p{color:rgba(255,255,255,0.85);font-size:15px}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <i class="ti ti-ticket"></i>
+  <p>Loading your vouchers…</p>
+</div>
+
+<!-- SCREEN: HOME -->
+<div class="screen" id="screen-home">
+  <div class="topbar">
+    <div class="topbar-text">
+      <h1>My Vouchers</h1>
+      <p id="home-subtitle">Loading…</p>
+    </div>
+    <i class="ti ti-refresh topbar-icon" onclick="syncAll()" aria-label="Sync"></i>
+  </div>
+  <div id="sync-status-home" class="sync-bar sync-ok"><div class="sync-dot"></div><span>Synced with Google Sheets</span></div>
+  <div class="scroll-content">
+    <div class="sec">
+      <div class="sec-title">Shops</div>
+      <div id="home-shops-list"></div>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="showScreen('home')"><i class="ti ti-home"></i><span>Home</span></div>
+    <div class="tab" onclick="showScreen('buy')"><i class="ti ti-plus"></i><span>Buy</span></div>
+    <div class="tab" onclick="showScreen('use')"><i class="ti ti-ticket"></i><span>Use</span></div>
+    <div class="tab" onclick="showScreen('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab" onclick="showScreen('shops')"><i class="ti ti-building-store"></i><span>Shops</span></div>
+  </div>
+</div>
+
+<!-- SCREEN: BUY -->
+<div class="screen" id="screen-buy">
+  <div class="topbar">
+    <div class="topbar-text"><h1>Buy Vouchers</h1><p>Replenish your balance</p></div>
+  </div>
+  <div class="scroll-content">
+    <div class="sec">
+      <div class="form-field">
+        <label>Shop</label>
+        <div class="shop-sel" onclick="openShopPicker('buy')" id="buy-shop-sel">
+          <div class="logo logo-sm" id="buy-shop-logo"></div>
+          <span class="sel-name" id="buy-shop-name">Select shop</span>
+          <i class="ti ti-chevron-down" style="color:var(--text3)"></i>
+        </div>
+      </div>
+      <div class="form-field"><label>Product / voucher type</label><select id="buy-product"></select></div>
+      <div class="form-field"><label>Purchase date</label><input type="date" id="buy-date"></div>
+      <div class="form-field"><label>Expiry date <span style="color:var(--text3);font-weight:400">(auto-calculated)</span></label><input type="date" id="buy-expiry"></div>
+      <div class="form-field">
+        <label>Quantity</label>
+        <div class="qty-row">
+          <div class="qty-btn" onclick="changeQty('buy',-1)">−</div>
+          <div class="qty-num" id="buy-qty">1</div>
+          <div class="qty-btn" onclick="changeQty('buy',1)">+</div>
+        </div>
+      </div>
+    </div>
+    <div class="sec"><button class="btn btn-primary" onclick="confirmBuy()">Confirm Purchase</button></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="showScreen('home')"><i class="ti ti-home"></i><span>Home</span></div>
+    <div class="tab active" onclick="showScreen('buy')"><i class="ti ti-plus"></i><span>Buy</span></div>
+    <div class="tab" onclick="showScreen('use')"><i class="ti ti-ticket"></i><span>Use</span></div>
+    <div class="tab" onclick="showScreen('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab" onclick="showScreen('shops')"><i class="ti ti-building-store"></i><span>Shops</span></div>
+  </div>
+</div>
+
+<!-- SCREEN: USE -->
+<div class="screen" id="screen-use">
+  <div class="topbar">
+    <div class="topbar-text"><h1>Use Vouchers</h1><p>Record a spend</p></div>
+  </div>
+  <div class="scroll-content">
+    <div class="sec">
+      <div class="form-field">
+        <label>Shop</label>
+        <div class="shop-sel" onclick="openShopPicker('use')" id="use-shop-sel">
+          <div class="logo logo-sm" id="use-shop-logo"></div>
+          <span class="sel-name" id="use-shop-name">Select shop</span>
+          <i class="ti ti-chevron-down" style="color:var(--text3)"></i>
+        </div>
+      </div>
+      <div class="form-field"><label>Product</label><select id="use-product" onchange="updateUseBalanceNote()"></select></div>
+      <div class="form-field">
+        <label>Quantity to use</label>
+        <div class="qty-row">
+          <div class="qty-btn" onclick="changeQty('use',-1)">−</div>
+          <div class="qty-num" id="use-qty">1</div>
+          <div class="qty-btn" onclick="changeQty('use',1)">+</div>
+        </div>
+      </div>
+      <div id="use-balance-note"></div>
+      <div class="form-field" style="margin-top:10px"><label>Date of use</label><input type="date" id="use-date"></div>
+      <div class="form-field"><label>Notes (optional)</label><input type="text" id="use-notes" placeholder="e.g. weekly groceries"></div>
+    </div>
+    <div class="sec"><div class="btn-row" id="use-btn-row"><button class="btn btn-primary" onclick="confirmUse()">Confirm Use</button></div></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="showScreen('home')"><i class="ti ti-home"></i><span>Home</span></div>
+    <div class="tab" onclick="showScreen('buy')"><i class="ti ti-plus"></i><span>Buy</span></div>
+    <div class="tab active" onclick="showScreen('use')"><i class="ti ti-ticket"></i><span>Use</span></div>
+    <div class="tab" onclick="showScreen('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab" onclick="showScreen('shops')"><i class="ti ti-building-store"></i><span>Shops</span></div>
+  </div>
+</div>
+
+<!-- SCREEN: HISTORY -->
+<div class="screen" id="screen-history">
+  <div class="topbar">
+    <div class="topbar-text" style="flex:1"><h1>History</h1><p>All transactions</p></div>
+    <i class="ti ti-adjustments-horizontal topbar-icon" onclick="toggleProductFilter()" aria-label="Filter"></i>
+  </div>
+  <div class="scroll-content">
+    <div class="sec"><div class="stat-grid" id="history-stats"></div></div>
+    <div class="filter-bar" id="history-shop-chips"></div>
+    <div class="filter-bar" id="history-product-chips" style="display:none"></div>
+    <div class="sec" id="history-list"></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="showScreen('home')"><i class="ti ti-home"></i><span>Home</span></div>
+    <div class="tab" onclick="showScreen('buy')"><i class="ti ti-plus"></i><span>Buy</span></div>
+    <div class="tab" onclick="showScreen('use')"><i class="ti ti-ticket"></i><span>Use</span></div>
+    <div class="tab active" onclick="showScreen('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab" onclick="showScreen('shops')"><i class="ti ti-building-store"></i><span>Shops</span></div>
+  </div>
+</div>
+
+<!-- SCREEN: SHOPS LIST -->
+<div class="screen" id="screen-shops">
+  <div class="topbar">
+    <div class="topbar-text" style="flex:1"><h1>Shops</h1><p>Manage your shops</p></div>
+    <i class="ti ti-plus topbar-icon" onclick="openNewShop()" aria-label="Add shop"></i>
+  </div>
+  <div class="scroll-content">
+    <div class="sec" id="shops-list"></div>
+    <div class="sec"><button class="btn btn-secondary" onclick="openNewShop()"><i class="ti ti-plus" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i> Add new shop</button></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="showScreen('home')"><i class="ti ti-home"></i><span>Home</span></div>
+    <div class="tab" onclick="showScreen('buy')"><i class="ti ti-plus"></i><span>Buy</span></div>
+    <div class="tab" onclick="showScreen('use')"><i class="ti ti-ticket"></i><span>Use</span></div>
+    <div class="tab" onclick="showScreen('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab active" onclick="showScreen('shops')"><i class="ti ti-building-store"></i><span>Shops</span></div>
+  </div>
+</div>
+
+<!-- SCREEN: SHOP PROFILE -->
+<div class="screen" id="screen-profile">
+  <div class="topbar">
+    <i class="ti ti-arrow-left back-btn" onclick="showScreen('shops')" aria-label="Back"></i>
+    <div class="topbar-text" style="flex:1"><h1 id="profile-topbar-title">Shop profile</h1></div>
+    <i class="ti ti-trash topbar-icon" onclick="deleteShop()" aria-label="Delete shop"></i>
+  </div>
+  <div class="scroll-content">
+    <div class="profile-header">
+      <div class="logo logo-lg" id="profile-logo" onclick="triggerLogoUpload()"></div>
+      <div class="upload-hint" onclick="triggerLogoUpload()"><i class="ti ti-upload" style="font-size:14px"></i> Tap to upload logo</div>
+      <input type="file" id="logo-file-input" accept="image/*" onchange="handleLogoUpload(event)">
+    </div>
+    <div class="sec">
+      <div class="form-field"><label>Shop name</label><input type="text" id="profile-name" placeholder="e.g. ParkSon"></div>
+      <div class="form-field">
+        <label>Expiry rule</label>
+        <select id="profile-expiry-rule">
+          <option value="3">+3 months from purchase</option>
+          <option value="6" selected>+6 months from purchase</option>
+          <option value="12">+12 months from purchase</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Products / voucher types</label>
+        <div class="tag-row" id="profile-products"></div>
+      </div>
+      <div class="form-field"><label>Default product</label><select id="profile-default-product"></select></div>
+    </div>
+    <div class="sec"><button class="btn btn-primary" onclick="saveShop()">Save changes</button></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="showScreen('home')"><i class="ti ti-home"></i><span>Home</span></div>
+    <div class="tab" onclick="showScreen('buy')"><i class="ti ti-plus"></i><span>Buy</span></div>
+    <div class="tab" onclick="showScreen('use')"><i class="ti ti-ticket"></i><span>Use</span></div>
+    <div class="tab" onclick="showScreen('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab active" onclick="showScreen('shops')"><i class="ti ti-building-store"></i><span>Shops</span></div>
+  </div>
+</div>
+
+<!-- SHOP PICKER MODAL -->
+<div class="modal-overlay" id="shop-picker-modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h3>Select shop</h3>
+    <div id="shop-picker-list"></div>
+    <div style="margin-top:12px"><button class="btn btn-secondary" onclick="closeModal('shop-picker-modal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="add-product-modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h3>Add product type</h3>
+    <div class="form-field"><label>Product name</label><input type="text" id="new-product-name" placeholder="e.g. Fresh Produce"></div>
+    <div class="modal-btn-row">
+      <button class="btn btn-secondary" onclick="closeModal('add-product-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addProduct()">Add</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────
+const SHEET_ID = '1l8-SIQIk6aOi4qHW72Fek4-5MTDm6nLmJPKHKNXQchc';
+const API_KEY  = 'AIzaSyAI0nAvkpC3dB9RSr4Z9l1I3ksogvJD7PE';
+const BASE     = 'https://sheets.googleapis.com/v4/spreadsheets';
+
+// ─── LOCAL CACHE ──────────────────────────────────────────────
+let db = { shops: [], transactions: [] };
+
+function saveLocal() {
+  try { localStorage.setItem('voucherdb_cache', JSON.stringify(db)); } catch(e) {}
+}
+function loadLocal() {
+  try {
+    const r = localStorage.getItem('voucherdb_cache');
+    if (r) db = JSON.parse(r);
+  } catch(e) {}
+  if (!db.shops) db.shops = [];
+  if (!db.transactions) db.transactions = [];
+}
+
+// ─── SYNC STATUS ──────────────────────────────────────────────
+function setSyncStatus(state, msg) {
+  const el = document.getElementById('sync-status-home');
+  if (!el) return;
+  el.className = 'sync-bar sync-' + state;
+  el.innerHTML = `<div class="sync-dot"></div><span>${msg}</span>`;
+}
+
+// ─── SHEETS API ───────────────────────────────────────────────
+async function sheetsGet(range) {
+  const url = `${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('Sheets read failed: ' + r.status);
+  const d = await r.json();
+  return d.values || [];
+}
+
+async function sheetsAppend(sheetName, row) {
+  const url = `${BASE}/${SHEET_ID}/values/${encodeURIComponent(sheetName + '!A1')}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS&key=${API_KEY}`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values: [row] })
+  });
+  if (!r.ok) throw new Error('Sheets write failed: ' + r.status);
+  return r.json();
+}
+
+async function sheetsUpdate(range, values) {
+  const url = `${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW&key=${API_KEY}`;
+  const r = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values })
+  });
+  if (!r.ok) throw new Error('Sheets update failed: ' + r.status);
+  return r.json();
+}
+
+async function sheetsClear(range) {
+  const url = `${BASE}/${SHEET_ID}/values/${encodeURIComponent(range)}:clear?key=${API_KEY}`;
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+  if (!r.ok) throw new Error('Sheets clear failed: ' + r.status);
+}
+
+// ─── SYNC: READ ALL FROM SHEETS ───────────────────────────────
+async function syncAll() {
+  setSyncStatus('busy', 'Syncing with Google Sheets…');
+  try {
+    const [shopRows, txRows] = await Promise.all([
+      sheetsGet('Shops!A2:F1000'),
+      sheetsGet('Transactions!A2:I1000')
+    ]);
+
+    db.shops = shopRows.filter(r => r[0]).map(r => ({
+      id: r[0] || '', name: r[1] || '', logo: r[2] || null,
+      products: r[3] ? r[3].split('|') : ['General'],
+      defaultProduct: r[4] || '', expiryMonths: parseInt(r[5]) || 6
+    }));
+
+    db.transactions = txRows.filter(r => r[0]).map(r => ({
+      id: r[0] || '', shopId: r[1] || '', product: r[2] || '',
+      type: r[3] || 'buy', qty: parseInt(r[4]) || 0,
+      date: r[5] || '', expiry: r[6] || '', notes: r[7] || '',
+      balanceAfter: parseInt(r[8]) || 0
+    }));
+
+    saveLocal();
+    setSyncStatus('ok', 'Synced · ' + new Date().toLocaleTimeString());
+    renderCurrentScreen();
+  } catch(e) {
+    setSyncStatus('err', 'Sync failed — showing cached data');
+    console.error(e);
+  }
+}
+
+// ─── WRITE SHOP TO SHEETS ─────────────────────────────────────
+async function writeShopToSheets(shop) {
+  const rows = await sheetsGet('Shops!A2:A1000');
+  const rowIndex = rows.findIndex(r => r[0] === shop.id);
+  const rowData = [shop.id, shop.name, shop.logo || '', shop.products.join('|'), shop.defaultProduct, shop.expiryMonths];
+
+  if (rowIndex === -1) {
+    await sheetsAppend('Shops', rowData);
+  } else {
+    await sheetsUpdate(`Shops!A${rowIndex + 2}:F${rowIndex + 2}`, [rowData]);
+  }
+}
+
+async function deleteShopFromSheets(shopId) {
+  const rows = await sheetsGet('Shops!A2:A1000');
+  const rowIndex = rows.findIndex(r => r[0] === shopId);
+  if (rowIndex !== -1) {
+    await sheetsUpdate(`Shops!A${rowIndex+2}:F${rowIndex+2}`, [['','','','','','']]);
+  }
+}
+
+async function writeTxnToSheets(t) {
+  await sheetsAppend('Transactions', [t.id, t.shopId, t.product, t.type, t.qty, t.date, t.expiry || '', t.notes || '', t.balanceAfter]);
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function addMonths(dateStr, months) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().split('T')[0];
+}
+function fmtDate(dateStr) {
+  if (!dateStr) return '';
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  return Math.ceil((new Date(dateStr + 'T00:00:00') - new Date(today() + 'T00:00:00')) / 86400000);
+}
+function getShop(id) { return db.shops.find(s => s.id === id); }
+function getBalance(shopId, product) {
+  return db.transactions.filter(t => t.shopId === shopId && t.product === product)
+    .reduce((sum, t) => t.type === 'buy' ? sum + t.qty : sum - t.qty, 0);
+}
+function getTotalBalance(shopId) {
+  const shop = getShop(shopId);
+  if (!shop) return 0;
+  return shop.products.reduce((sum, p) => sum + getBalance(shopId, p), 0);
+}
+function getNextExpiry(shopId, product) {
+  const batches = db.transactions
+    .filter(t => t.shopId === shopId && t.product === product && t.type === 'buy' && t.expiry)
+    .sort((a,b) => a.expiry.localeCompare(b.expiry));
+  return batches.length ? batches[0].expiry : null;
+}
+function renderLogo(shop, el) {
+  el.innerHTML = '';
+  if (shop && shop.logo) {
+    const img = document.createElement('img');
+    img.src = shop.logo;
+    el.appendChild(img);
+  } else if (shop) {
+    el.textContent = shop.name.substring(0,2).toUpperCase();
+  } else { el.textContent = '?'; }
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+let currentScreen = 'home';
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  currentScreen = name;
+  renderCurrentScreen();
+}
+function renderCurrentScreen() {
+  if (currentScreen === 'home') renderHome();
+  else if (currentScreen === 'buy') renderBuy();
+  else if (currentScreen === 'use') renderUse();
+  else if (currentScreen === 'history') renderHistory();
+  else if (currentScreen === 'shops') renderShopsList();
+}
+
+// ─── HOME ─────────────────────────────────────────────────────
+function renderHome() {
+  const list = document.getElementById('home-shops-list');
+  const sub = document.getElementById('home-subtitle');
+  if (!db.shops.length) {
+    list.innerHTML = '<div class="empty-state"><i class="ti ti-building-store"></i><p>No shops yet. Add your first shop in the Shops tab.</p></div>';
+    sub.textContent = '0 shops'; return;
+  }
+  sub.textContent = db.shops.length + ' active shop' + (db.shops.length !== 1 ? 's' : '');
+  list.innerHTML = '';
+  db.shops.forEach(shop => {
+    const bal = getTotalBalance(shop.id);
+    const expiry = getNextExpiry(shop.id, shop.defaultProduct || shop.products[0]);
+    const days = expiry ? daysUntil(expiry) : null;
+    let bc = 'b-ok', bl = 'OK';
+    if (bal === 0) { bc = 'b-empty'; bl = 'Empty'; } else if (bal <= 3) { bc = 'b-low'; bl = 'Low'; }
+    let expiryHtml = '';
+    if (expiry && days !== null && days <= 60) {
+      expiryHtml = `<div class="expiry-row"><span class="expiry-text"><i class="ti ti-clock" style="font-size:13px;vertical-align:-2px"></i> Expires ${fmtDate(expiry)} · ${days} day${days!==1?'s':''}</span></div>`;
+    }
+    const card = document.createElement('div');
+    card.className = 'shop-card';
+    card.onclick = () => openShopProfile(shop.id);
+    card.innerHTML = `<div class="shop-row"><div class="shop-left"><div class="logo" id="hl-${shop.id}"></div><div class="shop-info"><div class="name">${shop.name}</div><div class="sub">${shop.defaultProduct||shop.products[0]||''} · ${bal} voucher${bal!==1?'s':''} left</div></div></div><span class="badge ${bc}">${bl}</span></div>${expiryHtml}`;
+    list.appendChild(card);
+    renderLogo(shop, document.getElementById('hl-' + shop.id));
+  });
+}
+
+// ─── BUY ──────────────────────────────────────────────────────
+let buyQty = 1, buyShopId = null;
+function renderBuy() {
+  buyQty = 1;
+  document.getElementById('buy-qty').textContent = 1;
+  document.getElementById('buy-date').value = today();
+  if (!buyShopId && db.shops.length) buyShopId = db.shops[0].id;
+  updateBuyShopUI();
+}
+function updateBuyShopUI() {
+  const shop = getShop(buyShopId);
+  const logoEl = document.getElementById('buy-shop-logo');
+  const nameEl = document.getElementById('buy-shop-name');
+  const productSel = document.getElementById('buy-product');
+  const expiryEl = document.getElementById('buy-expiry');
+  if (shop) {
+    renderLogo(shop, logoEl); nameEl.textContent = shop.name;
+    productSel.innerHTML = shop.products.map(p => `<option${p===shop.defaultProduct?' selected':''}>${p}</option>`).join('');
+    expiryEl.value = addMonths(document.getElementById('buy-date').value || today(), shop.expiryMonths || 6);
+  } else { logoEl.textContent = '?'; nameEl.textContent = 'Select shop'; productSel.innerHTML = ''; }
+}
+document.getElementById('buy-date').addEventListener('change', () => {
+  const shop = getShop(buyShopId);
+  if (shop) document.getElementById('buy-expiry').value = addMonths(document.getElementById('buy-date').value, shop.expiryMonths || 6);
+});
+function changeQty(screen, delta) {
+  if (screen === 'buy') { buyQty = Math.max(1, buyQty + delta); document.getElementById('buy-qty').textContent = buyQty; }
+  else { useQty = Math.max(1, useQty + delta); document.getElementById('use-qty').textContent = useQty; updateUseBalanceNote(); }
+}
+async function confirmBuy() {
+  const shop = getShop(buyShopId);
+  if (!shop) { toast('Please select a shop'); return; }
+  const product = document.getElementById('buy-product').value;
+  const date = document.getElementById('buy-date').value;
+  const expiry = document.getElementById('buy-expiry').value;
+  if (!date) { toast('Please set a purchase date'); return; }
+  const newBal = getBalance(buyShopId, product) + buyQty;
+  const t = { id: uid(), shopId: buyShopId, product, type: 'buy', qty: buyQty, date, expiry, notes: '', balanceAfter: newBal };
+  db.transactions.push(t);
+  saveLocal();
+  setSyncStatus('busy', 'Saving to Google Sheets…');
+  toast('Saved locally…');
+  try {
+    await writeTxnToSheets(t);
+    setSyncStatus('ok', 'Saved · ' + new Date().toLocaleTimeString());
+    toast(`Added ${buyQty} voucher${buyQty!==1?'s':''} to ${shop.name}`);
+  } catch(e) { setSyncStatus('err', 'Sheet write failed — saved locally'); toast('Saved locally (offline)'); }
+  showScreen('home');
+}
+
+// ─── USE ──────────────────────────────────────────────────────
+let useQty = 1, useShopId = null;
+function renderUse() {
+  useQty = 1;
+  document.getElementById('use-qty').textContent = 1;
+  document.getElementById('use-date').value = today();
+  document.getElementById('use-notes').value = '';
+  if (!useShopId && db.shops.length) useShopId = db.shops[0].id;
+  updateUseShopUI();
+}
+function updateUseShopUI() {
+  const shop = getShop(useShopId);
+  const logoEl = document.getElementById('use-shop-logo');
+  const nameEl = document.getElementById('use-shop-name');
+  const productSel = document.getElementById('use-product');
+  if (shop) {
+    renderLogo(shop, logoEl); nameEl.textContent = shop.name;
+    productSel.innerHTML = shop.products.map(p => `<option${p===shop.defaultProduct?' selected':''}>${p}</option>`).join('');
+  } else { logoEl.textContent = '?'; nameEl.textContent = 'Select shop'; productSel.innerHTML = ''; }
+  updateUseBalanceNote();
+}
+function updateUseBalanceNote() {
+  const shop = getShop(useShopId);
+  const product = document.getElementById('use-product').value;
+  const noteEl = document.getElementById('use-balance-note');
+  const btnRow = document.getElementById('use-btn-row');
+  if (!shop || !product) { noteEl.innerHTML = ''; return; }
+  const bal = getBalance(useShopId, product);
+  const remaining = bal - useQty;
+  if (bal === 0 || useQty > bal) {
+    noteEl.innerHTML = `<div class="alert alert-warn"><i class="ti ti-alert-triangle"></i><span>Not enough vouchers. <strong>${shop.name}</strong> has <strong>${bal}</strong> ${product} voucher${bal!==1?'s':''} remaining. Buy more to continue.</span></div>`;
+    btnRow.innerHTML = `<button class="btn btn-danger" style="flex:1">Cannot confirm</button><button class="btn btn-primary" style="flex:1" onclick="showScreen('buy')">Go Buy →</button>`;
+  } else {
+    noteEl.innerHTML = `<div class="remaining-note"><i class="ti ti-ticket" style="font-size:13px;vertical-align:-2px"></i> ${remaining} voucher${remaining!==1?'s':''} remaining after this use</div>`;
+    btnRow.innerHTML = `<button class="btn btn-primary" onclick="confirmUse()">Confirm Use</button>`;
+  }
+}
+async function confirmUse() {
+  const shop = getShop(useShopId);
+  if (!shop) { toast('Please select a shop'); return; }
+  const product = document.getElementById('use-product').value;
+  const date = document.getElementById('use-date').value;
+  const notes = document.getElementById('use-notes').value;
+  const bal = getBalance(useShopId, product);
+  if (useQty > bal) { toast('Not enough vouchers'); return; }
+  const newBal = bal - useQty;
+  const t = { id: uid(), shopId: useShopId, product, type: 'use', qty: useQty, date, expiry: '', notes, balanceAfter: newBal };
+  db.transactions.push(t);
+  saveLocal();
+  setSyncStatus('busy', 'Saving to Google Sheets…');
+  toast('Saving…');
+  try {
+    await writeTxnToSheets(t);
+    setSyncStatus('ok', 'Saved · ' + new Date().toLocaleTimeString());
+    toast(`Used ${useQty} voucher${useQty!==1?'s':''} at ${shop.name}`);
+  } catch(e) { setSyncStatus('err', 'Sheet write failed — saved locally'); toast('Saved locally (offline)'); }
+  showScreen('home');
+}
+
+// ─── HISTORY ──────────────────────────────────────────────────
+let histShopFilter = 'all', histProductFilter = 'all', productFilterVisible = false;
+function toggleProductFilter() {
+  productFilterVisible = !productFilterVisible;
+  document.getElementById('history-product-chips').style.display = productFilterVisible ? 'flex' : 'none';
+}
+function renderHistory() { renderHistoryStats(); renderHistoryChips(); renderHistoryList(); }
+function renderHistoryStats() {
+  const m = today().slice(0,7);
+  const bought = db.transactions.filter(t => t.type==='buy' && t.date.startsWith(m)).reduce((s,t) => s+t.qty, 0);
+  const used = db.transactions.filter(t => t.type==='use' && t.date.startsWith(m)).reduce((s,t) => s+t.qty, 0);
+  const total = db.shops.reduce((s,sh) => s + getTotalBalance(sh.id), 0);
+  const expiring = db.transactions.filter(t => t.type==='buy' && t.expiry && daysUntil(t.expiry) <= 30 && daysUntil(t.expiry) >= 0).length;
+  document.getElementById('history-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${bought}</div><div class="stat-lbl">Bought this month</div></div>
+    <div class="stat-card"><div class="stat-val">${used}</div><div class="stat-lbl">Used this month</div></div>
+    <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total remaining</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:${expiring>0?'var(--amber-dark)':'var(--text)'}">${expiring}</div><div class="stat-lbl">Expiring ≤30 days</div></div>`;
+}
+function renderHistoryChips() {
+  const bar = document.getElementById('history-shop-chips');
+  bar.innerHTML = '';
+  const all = document.createElement('div');
+  all.className = 'chip' + (histShopFilter==='all'?' active':'');
+  all.textContent = 'All shops';
+  all.onclick = () => { histShopFilter='all'; histProductFilter='all'; renderHistory(); };
+  bar.appendChild(all);
+  db.shops.forEach(shop => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (histShopFilter===shop.id?' active':'');
+    const cl = document.createElement('div'); cl.className = 'chip-logo';
+    renderLogo(shop, cl);
+    chip.appendChild(cl); chip.appendChild(document.createTextNode(shop.name));
+    chip.onclick = () => { histShopFilter=shop.id; histProductFilter='all'; renderHistory(); };
+    bar.appendChild(chip);
+  });
+  const pbar = document.getElementById('history-product-chips');
+  pbar.innerHTML = '';
+  if (histShopFilter !== 'all') {
+    const shop = getShop(histShopFilter);
+    if (shop && shop.products.length > 1) {
+      const allP = document.createElement('div');
+      allP.className = 'chip' + (histProductFilter==='all'?' active':'');
+      allP.textContent = 'All products';
+      allP.onclick = () => { histProductFilter='all'; renderHistory(); };
+      pbar.appendChild(allP);
+      shop.products.forEach(p => {
+        const pc = document.createElement('div');
+        pc.className = 'chip' + (histProductFilter===p?' active':'');
+        pc.textContent = p;
+        pc.onclick = () => { histProductFilter=p; renderHistory(); };
+        pbar.appendChild(pc);
+      });
+    }
+  }
+}
+function renderHistoryList() {
+  const list = document.getElementById('history-list');
+  let txns = [...db.transactions].sort((a,b) => b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+  if (histShopFilter !== 'all') txns = txns.filter(t => t.shopId===histShopFilter);
+  if (histProductFilter !== 'all') txns = txns.filter(t => t.product===histProductFilter);
+  if (!txns.length) { list.innerHTML = '<div class="empty-state"><i class="ti ti-history"></i><p>No transactions yet.</p></div>'; return; }
+  list.innerHTML = '';
+  txns.forEach(t => {
+    const shop = getShop(t.shopId); if (!shop) return;
+    const isBuy = t.type === 'buy';
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    row.innerHTML = `<div class="logo logo-sm" id="hlog-${t.id}"></div>
+      <div class="hist-info">
+        <div class="h-label">${isBuy?'Bought':'Used'} · ${shop.name} · ${t.product}</div>
+        <div class="h-sub">${fmtDate(t.date)}${t.notes?' · '+t.notes:''}</div>
+      </div>
+      <div class="hist-right">
+        <span class="txn-qty ${isBuy?'h-buy':'h-use'}">${isBuy?'+':'−'}${t.qty} ${isBuy?'bought':'used'}</span>
+        <span class="balance-pill">${t.balanceAfter} remaining</span>
+      </div>`;
+    list.appendChild(row);
+    renderLogo(shop, document.getElementById('hlog-' + t.id));
+  });
+}
+
+// ─── SHOPS LIST ───────────────────────────────────────────────
+function renderShopsList() {
+  const list = document.getElementById('shops-list');
+  if (!db.shops.length) { list.innerHTML = '<div class="empty-state"><i class="ti ti-building-store"></i><p>No shops added yet.</p></div>'; return; }
+  list.innerHTML = '';
+  db.shops.forEach(shop => {
+    const bal = getTotalBalance(shop.id);
+    const row = document.createElement('div');
+    row.className = 'list-row';
+    row.onclick = () => openShopProfile(shop.id);
+    row.innerHTML = `<div class="logo" id="slg-${shop.id}"></div>
+      <div class="shop-info" style="flex:1"><div class="name">${shop.name}</div><div class="sub">${shop.products.length} product${shop.products.length!==1?'s':''} · ${bal} voucher${bal!==1?'s':''} left</div></div>
+      <i class="ti ti-chevron-right list-row-right"></i>`;
+    list.appendChild(row);
+    renderLogo(shop, document.getElementById('slg-' + shop.id));
+  });
+}
+
+// ─── SHOP PROFILE ─────────────────────────────────────────────
+let editingShopId = null, profileProducts = [];
+function openNewShop() {
+  editingShopId = null; profileProducts = ['General'];
+  document.getElementById('profile-topbar-title').textContent = 'New shop';
+  document.getElementById('profile-name').value = '';
+  document.getElementById('profile-expiry-rule').value = '6';
+  renderProfileLogo(null); renderProfileProducts();
+  showScreen('profile');
+}
+function openShopProfile(shopId) {
+  const shop = getShop(shopId); if (!shop) return;
+  editingShopId = shopId; profileProducts = [...shop.products];
+  document.getElementById('profile-topbar-title').textContent = shop.name;
+  document.getElementById('profile-name').value = shop.name;
+  document.getElementById('profile-expiry-rule').value = String(shop.expiryMonths || 6);
+  renderProfileLogo(shop); renderProfileProducts(); renderProfileDefaultProduct(shop.defaultProduct);
+  showScreen('profile');
+}
+function renderProfileLogo(shop) {
+  const el = document.getElementById('profile-logo');
+  el.innerHTML = '';
+  if (shop && shop.logo) { const img = document.createElement('img'); img.src = shop.logo; el.appendChild(img); }
+  else if (shop) { el.textContent = shop.name.substring(0,2).toUpperCase(); }
+  else { el.textContent = '?'; }
+}
+function renderProfileProducts() {
+  const c = document.getElementById('profile-products'); c.innerHTML = '';
+  profileProducts.forEach((p,i) => {
+    const tag = document.createElement('span'); tag.className = 'tag';
+    tag.innerHTML = `${p} <span class="tag-del" onclick="removeProduct(${i})">×</span>`;
+    c.appendChild(tag);
+  });
+  const btn = document.createElement('span'); btn.className = 'add-tag-btn';
+  btn.innerHTML = `<i class="ti ti-plus" style="font-size:12px"></i> Add`;
+  btn.onclick = () => openModal('add-product-modal');
+  c.appendChild(btn);
+  renderProfileDefaultProduct();
+}
+function renderProfileDefaultProduct(current) {
+  const sel = document.getElementById('profile-default-product');
+  const val = current || sel.value;
+  sel.innerHTML = profileProducts.map(p => `<option${p===val?' selected':''}>${p}</option>`).join('');
+}
+function removeProduct(i) {
+  if (profileProducts.length <= 1) { toast('Need at least one product'); return; }
+  profileProducts.splice(i,1); renderProfileProducts();
+}
+function addProduct() {
+  const name = document.getElementById('new-product-name').value.trim();
+  if (!name) { toast('Enter a product name'); return; }
+  if (profileProducts.includes(name)) { toast('Already exists'); return; }
+  profileProducts.push(name);
+  document.getElementById('new-product-name').value = '';
+  closeModal('add-product-modal'); renderProfileProducts();
+}
+function triggerLogoUpload() { document.getElementById('logo-file-input').click(); }
+function handleLogoUpload(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const data = ev.target.result;
+    const el = document.getElementById('profile-logo'); el.innerHTML = '';
+    const img = document.createElement('img'); img.src = data; el.appendChild(img);
+    if (editingShopId) { const shop = getShop(editingShopId); if (shop) { shop.logo = data; saveLocal(); } }
+    else { window._pendingLogo = data; }
+  };
+  reader.readAsDataURL(file);
+}
+async function saveShop() {
+  const name = document.getElementById('profile-name').value.trim();
+  if (!name) { toast('Enter a shop name'); return; }
+  const expiryMonths = parseInt(document.getElementById('profile-expiry-rule').value);
+  const defaultProduct = document.getElementById('profile-default-product').value;
+  let shop;
+  if (editingShopId) {
+    shop = getShop(editingShopId);
+    shop.name = name; shop.products = [...profileProducts]; shop.defaultProduct = defaultProduct; shop.expiryMonths = expiryMonths;
+  } else {
+    shop = { id: uid(), name, logo: window._pendingLogo || null, products: [...profileProducts], defaultProduct, expiryMonths };
+    db.shops.push(shop); window._pendingLogo = null;
+  }
+  saveLocal();
+  setSyncStatus('busy', 'Saving shop to Google Sheets…');
+  try { await writeShopToSheets(shop); setSyncStatus('ok', 'Saved · ' + new Date().toLocaleTimeString()); }
+  catch(e) { setSyncStatus('err', 'Sheet write failed — saved locally'); }
+  toast(editingShopId ? 'Shop updated' : 'Shop added');
+  showScreen('shops');
+}
+async function deleteShop() {
+  if (!editingShopId) return;
+  const shop = getShop(editingShopId);
+  if (!confirm(`Delete "${shop.name}"? This also removes all its transactions.`)) return;
+  db.shops = db.shops.filter(s => s.id !== editingShopId);
+  db.transactions = db.transactions.filter(t => t.shopId !== editingShopId);
+  saveLocal();
+  setSyncStatus('busy', 'Deleting from Google Sheets…');
+  try { await deleteShopFromSheets(editingShopId); setSyncStatus('ok', 'Deleted'); }
+  catch(e) { setSyncStatus('err', 'Sheet delete failed — removed locally'); }
+  toast('Shop deleted');
+  showScreen('shops');
+}
+
+// ─── SHOP PICKER MODAL ────────────────────────────────────────
+let shopPickerTarget = 'buy';
+function openShopPicker(target) {
+  shopPickerTarget = target;
+  const list = document.getElementById('shop-picker-list'); list.innerHTML = '';
+  if (!db.shops.length) { list.innerHTML = '<p style="color:var(--text2);font-size:14px;text-align:center;padding:16px 0">No shops yet. Add one in the Shops tab.</p>'; }
+  db.shops.forEach(shop => {
+    const row = document.createElement('div'); row.className = 'list-row'; row.style.cursor = 'pointer';
+    row.innerHTML = `<div class="logo logo-sm" id="pk-${shop.id}"></div><div class="shop-info"><div class="name">${shop.name}</div></div>`;
+    row.onclick = () => selectShop(shop.id); list.appendChild(row);
+    renderLogo(shop, document.getElementById('pk-' + shop.id));
+  });
+  openModal('shop-picker-modal');
+}
+function selectShop(shopId) {
+  closeModal('shop-picker-modal');
+  if (shopPickerTarget === 'buy') { buyShopId = shopId; updateBuyShopUI(); }
+  else { useShopId = shopId; updateUseShopUI(); }
+}
+function closeModalOutside(e) { if (e.target === e.currentTarget) closeModal(e.currentTarget.id); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ─── INIT ─────────────────────────────────────────────────────
+async function init() {
+  loadLocal();
+  renderHome();
+  document.getElementById('screen-home').classList.add('active');
+  currentScreen = 'home';
+  setTimeout(() => document.getElementById('loading').classList.add('hide'), 400);
+  await syncAll();
+}
+
+init();
+</script>
+</body>
+</html>
